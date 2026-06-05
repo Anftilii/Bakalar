@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*.pth
+results/
+logs/
+.DS_Store
+.env
+*.log
