@@ -1,74 +1,57 @@
-# Convolutional Neural Networks for Medical Image Classification
+# Konvolučné neurónové siete pre klasifikáciu medicínskych obrazov
 
-Bachelor's thesis — Technical University of Košice, Faculty of Electrical Engineering and Informatics (TUKE FEI), 2026.
+Bakalárska práca — Technická univerzita v Košiciach, Fakulta elektrotechniky a informatiky (TUKE FEI), 2026.
 
-Experimental comparison of four CNN architectures (**VGG19**, **ResNet50**, **DenseNet121**, **InceptionV3**) on four medical image classification tasks using transfer learning and 10-fold cross-validation.
+Experimentálne porovnanie architektúr **VGG19**, **ResNet50**, **DenseNet121** a **InceptionV3** na štyroch úlohách klasifikácie medicínskych obrazov pomocou transferového učenia a 10-násobnej krížovej validácie.
 
-## Datasets
+## Datasety
 
-| Dataset | Task | Classes |
+| Dataset | Úloha | Triedy |
 |---|---|---|
-| [Chest X-Ray Pneumonia](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) | Binary | NORMAL, PNEUMONIA |
-| [Brain Tumor MRI](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) | Multi-class | glioma, meningioma, notumor, pituitary |
-| [Skin Cancer MNIST: HAM10000](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000) | Multi-class | akiec, bcc, bkl, mel, nv |
-| [Histopathologic Cancer Detection](https://www.kaggle.com/c/histopathologic-cancer-detection) | Binary | no\_cancer, cancer |
+| [Chest X-Ray Pneumonia](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) | Binárna | NORMAL, PNEUMONIA |
+| [Brain Tumor MRI](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) | Viactriedna | glioma, meningioma, notumor, pituitary |
+| [Skin Cancer MNIST: HAM10000](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000) | Viactriedna | akiec, bcc, bkl, mel, nv |
+| [Histopathologic Cancer Detection](https://www.kaggle.com/c/histopathologic-cancer-detection) | Binárna | no\_cancer, cancer |
 
-Datasets are not included in this repository. Download them from Kaggle and arrange according to the structure described in `config.py`.
+Datasety nie sú súčasťou repozitára — stiahni ich z Kaggle a nastav cesty v `config.py`.
 
-## Requirements
+## Inštalácia
 
-- Python 3.10+
-- PyTorch 2.0+ and torchvision 0.15+ (install from [pytorch.org](https://pytorch.org/get-started/locally/) matching your CUDA version)
+Python 3.10+, PyTorch 2.0+ (inštalácia podľa [pytorch.org](https://pytorch.org/get-started/locally/)):
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configuration
+## Konfigurácia
 
-Edit `config.py` and set the paths to your data and results directories:
+V súbore `config.py` nastav cesty k dátam a výsledkom:
 
 ```python
-BASE_DATA    = "/path/to/data"
-BASE_RESULTS = "/path/to/results"
+BASE_DATA    = "/cesta/k/datam"
+BASE_RESULTS = "/cesta/k/vysledkom"
 ```
 
-For the HAM10000 dataset, also update `data_dir`, `csv_path` and `img_dirs` in the `skin` config section.
+## Spustenie
 
-## Usage
-
-**Train a model:**
 ```bash
+# Tréning
 python train.py --dataset xray --model inceptionv3
-python train.py --dataset mri  --model densenet121
-python train.py --dataset skin --model resnet50
-python train.py --dataset histo --model resnet50
-```
+python train.py --dataset mri  --model densenet121 --epochs 30 --splits 5
 
-Optional arguments: `--epochs N`, `--splits K`
-
-**Evaluate a trained model:**
-```bash
+# Vyhodnotenie
 python evaluate.py --dataset xray --model inceptionv3
+
+# Hromadné spustenie
+bash run_all.sh
+bash run_test.sh   # rychla kontrola (2 foldy, 2 epochy)
 ```
 
-**Run all combinations:**
-```bash
-bash run_all.sh            # all models × all datasets
-bash run_all.sh resnet50   # one model, all datasets
-bash run_test.sh           # quick check (2 folds, 2 epochs)
-```
+## Výsledky
 
-
-## Project Structure
-
-```
-├── config.py          dataset configs, hyperparameters, paths
-├── train.py           training with stratified k-fold CV
-├── evaluate.py        final evaluation on test set
-├── run_all.sh         batch training script
-├── run_test.sh        quick sanity check
-├── datasets/          data loading modules
-├── models/            CNN architecture definitions
-└── requirements.txt
-```
+| Dataset | Najlepší model | Testovacia presnosť | Vyvážená presnosť |
+|---|---|---|---|
+| Chest X-Ray | InceptionV3 | 87,34 % | 83,38 % |
+| Brain Tumor MRI | DenseNet121 | 95,00 % | 95,00 % |
+| HAM10000 | ResNet50 | 97,00 % | 96,55 % |
+| Histopathologic Cancer | ResNet50 | 97,00 % | 97,11 % |
